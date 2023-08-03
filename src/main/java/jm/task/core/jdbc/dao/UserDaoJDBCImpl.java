@@ -14,33 +14,27 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS users " +
-                "(ID INT PRIMARY KEY AUTO_INCREMENT, " +
-                "NAME VARCHAR(100) NOT NULL, " +
-                "LASTNAME VARCHAR(100) NOT NULL, " +
-                "AGE TINYINT NOT NULL)";
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+        try (Statement statement = getConnection().createStatement()) {
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS users " +
+                    "(ID INT PRIMARY KEY AUTO_INCREMENT, " +
+                    "NAME VARCHAR(100) NOT NULL, " +
+                    "LASTNAME VARCHAR(100) NOT NULL, " +
+                    "AGE TINYINT NOT NULL)");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void dropUsersTable() {
-        String sql = "DROP TABLE IF EXISTS users";
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+        try (Statement statement = getConnection().createStatement()) {
+            statement.executeUpdate("DROP TABLE IF EXISTS users");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        String sql = "INSERT users (NAME, LASTNAME, AGE) VALUES (?, ?, ?)";
-        try (Connection connection = getConnection();
-             PreparedStatement preparedstatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedstatement = getConnection().prepareStatement("INSERT users (NAME, LASTNAME, AGE) VALUES (?, ?, ?)")) {
             preparedstatement.setString(1, name);
             preparedstatement.setString(2, lastName);
             preparedstatement.setByte(3, age);
@@ -52,9 +46,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        String sql = "DELETE FROM users WHERE ID = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement preparedstatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedstatement = getConnection().prepareStatement("DELETE FROM users WHERE ID = ?")) {
             preparedstatement.setLong(1, id);
             preparedstatement.executeUpdate();
         } catch (SQLException e) {
@@ -64,11 +56,9 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-        String sql = "SELECT * FROM users";
 
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(sql);
+        try (Statement statement = getConnection().createStatement()) {
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM users");
             while (resultSet.next()) {
                 User user = new User();
 
@@ -78,7 +68,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 user.setAge(resultSet.getByte("AGE"));
 
                 userList.add(user);
-                System.out.println(user.toString());
+                System.out.println(user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -87,10 +77,8 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        String sql = "DELETE FROM users";
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+        try (Statement statement = getConnection().createStatement()) {
+            statement.executeUpdate("DELETE FROM users");
         } catch (SQLException e) {
             e.printStackTrace();
         }
